@@ -2,6 +2,7 @@ use anyhow::Result;
 use hmac::{Hmac, Mac};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
+use serde_json::Value;
 use sha2::{Digest, Sha512};
 use std::collections::BTreeMap;
 
@@ -40,9 +41,6 @@ impl GateClient {
         // GET 请求没有 body，payload 为空字符串，计算 SHA512 hash
         let payload_hash = Self::sha512_hex("");
 
-        // GET 请求没有 body，payload 为空字符串，计算 SHA512 hash
-        let payload_hash = Self::sha512_hex("");
-
         // 构造签名字符串
         let sign_str = format!(
             "{}\n{}\n{}\n{}\n{}",
@@ -72,6 +70,65 @@ impl GateClient {
 
         if self.debug {
             println!("[GET] Response: {:#?}", resp);
+        }
+
+        Ok(serde_json::from_str::<T>(&resp)?)
+    }
+
+    pub async fn post<T>(
+        &self,
+        request_path: &str,
+        body_params: &BTreeMap<String, Value>,
+    ) -> Result<T>
+    where
+        T: DeserializeOwned + std::fmt::Debug,
+    {
+        let method = "POST";
+        let timestamp = self.get_timestamp();
+        let url_path = format!(
+            "/{}/{}",
+            self.prefix.trim_start_matches('/'),
+            request_path.trim_start_matches('/')
+        );
+
+        // 构造 JSON body 字符串
+        let body_json = serde_json::to_string(body_params)?;
+        let payload_hash = Self::sha512_hex(&body_json);
+
+        // 构造签名字符串
+        let sign_str = format!(
+            "{}\n{}\n{}\n{}\n{}",
+            method, url_path, "", payload_hash, timestamp
+        );
+
+        let sign = self.hmac_sha512_hex(&sign_str);
+        let url = format!(
+            "{}/{}/{}",
+            self.domain.trim_end_matches('/'),
+            self.prefix.trim_start_matches('/'),
+            request_path.trim_start_matches('/')
+        );
+        let headers = self.create_header(&sign, &timestamp);
+
+        if self.debug {
+            println!("SIGN STRING:\n{}", sign_str);
+            println!("[POST] URL: {}", url);
+            println!("[POST] Body: {}", body_json);
+            println!("[POST] Sign: {}", sign);
+        }
+
+        let client = reqwest::Client::new();
+        let resp = client
+            .post(&url)
+            .headers(headers)
+            .body(body_json)
+            .send()
+            .await?
+            .text()
+            .await?;
+
+        if self.debug {
+            println!("[POST] Response: {:#?}", resp);
         }
 
         Ok(serde_json::from_str::<T>(&resp)?)
@@ -108,15 +165,6 @@ impl GateClient {
         header_map.insert("Timestamp", HeaderValue::from_str(&timestamp).unwrap());
         header_map.insert("KEY", HeaderValue::from_str(&self.api_key).unwrap());
         header_map
-    }
-
-    /// 构建 query 参数的签名字符串（key+value 按照 ASCII 排序）
-    fn build_query_string(params: &BTreeMap<String, String>) -> String {
-        params
-            .iter()
-            .map(|(k, v)| format!("{}{}", k, v))
-            .collect::<Vec<_>>()
-            .join("&")
     }
 
     /// 构建完整 URL（含 query 参数）
