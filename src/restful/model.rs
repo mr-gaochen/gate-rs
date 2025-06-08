@@ -7,14 +7,14 @@ pub struct FuturesOrder {
     pub user: u64,
     pub create_time: f64,
     pub finish_time: Option<f64>,
-    pub finish_as: String, // e.g., "filled"
-    pub status: String,    // e.g., "open", "finished", "cancelled"
-    pub contract: String,  // contract name, e.g., "BTC_USDT"
-    pub size: i64,         // can be negative for short
-    pub iceberg: i64,      // iceberg quantity if any
-    pub price: String,     // limit price as string
-    pub close: bool,       // DEPRECATED, use is_close
-    pub is_close: bool,    // whether it's a close order
+    pub finish_as: Option<String>, // e.g., "filled"
+    pub status: String,            // e.g., "open", "finished", "cancelled"
+    pub contract: String,          // contract name, e.g., "BTC_USDT"
+    pub size: i64,                 // can be negative for short
+    pub iceberg: i64,              // iceberg quantity if any
+    pub price: String,             // limit price as string
+    pub close: bool,               // DEPRECATED, use is_close
+    pub is_close: bool,            // whether it's a close order
     pub reduce_only: bool,
     pub is_reduce_only: bool,
     pub is_liq: bool, // true if it's a liquidation order
