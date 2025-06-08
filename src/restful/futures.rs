@@ -18,4 +18,13 @@ impl GateClient {
             )
             .await?)
     }
+
+    // 获取合约账户
+    // GET /futures/{settle}/accounts
+    pub async fn futures_account(self, settle: &str) -> Result<Value> {
+        let params: BTreeMap<String, String> = BTreeMap::new();
+        Ok(self
+            .get::<Value>(&format!("/futures/{}/accounts", settle), &params)
+            .await?)
+    }
 }
