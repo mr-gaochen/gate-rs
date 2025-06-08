@@ -1,9 +1,9 @@
-use std::sync::Arc;
-
-use anyhow::{Context, Result};
+use anyhow::anyhow;
+use anyhow::Result;
 use chrono::Utc;
 use futures::{SinkExt, StreamExt};
 use serde_json::json;
+use std::sync::Arc;
 use tokio::{
     select,
     sync::{mpsc, Mutex},
@@ -32,6 +32,7 @@ async fn connect_websocket(
 async fn subscribe_channel<S>(write: &mut S, interval: &str, symbol: &str) -> Result<()>
 where
     S: SinkExt<Message> + Unpin,
+    S::Error: std::fmt::Debug, // 加上这句约束
 {
     let subscribe_msg = json!({
         "time": Utc::now().timestamp(),
@@ -40,15 +41,11 @@ where
         "payload": [interval, symbol]
     })
     .to_string();
+
     write
-        .send(Message::Text(subscribe_msg.clone()))
+        .send(Message::Text(subscribe_msg))
         .await
-        .with_context(|| {
-            format!(
-                "【gate】订阅消息发送失败: interval = {}, symbol = {}",
-                interval, symbol
-            )
-        })?
+        .map_err(|e| anyhow!("【gate】订阅消息发送失败: {:?}", e))
 }
 
 pub async fn run_with_handler(
@@ -82,7 +79,7 @@ async fn run_internal(
 
     loop {
         match connect_websocket(wss_domain).await {
-            Ok((ws_stream, tx, mut rx)) => {
+            Ok((ws_stream, _tx, mut rx)) => {
                 let (write_half, mut read_half) = ws_stream.split();
                 let write = Arc::new(Mutex::new(write_half));
 
