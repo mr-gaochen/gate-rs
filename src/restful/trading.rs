@@ -4,6 +4,8 @@ use crate::client::GateClient;
 use anyhow::Result;
 use serde_json::{json, Value};
 
+use super::model::FuturesOrder;
+
 /// 合约交易下单
 
 impl GateClient {
@@ -23,7 +25,7 @@ impl GateClient {
         close: Option<bool>,
         auto_size: Option<&str>,
         tif: Option<&str>,
-    ) -> Result<Value> {
+    ) -> Result<FuturesOrder> {
         let mut params: BTreeMap<String, Value> = BTreeMap::new();
 
         params.insert("contract".into(), json!(contract));
@@ -48,16 +50,16 @@ impl GateClient {
         }
 
         Ok(self
-            .post::<Value>(&format!("/futures/{}/orders", settle), &params)
+            .post::<FuturesOrder>(&format!("/futures/{}/orders", settle), &params)
             .await?)
     }
 
     // 查询订单详情
     // GET /futures/{settle}/orders/{order_id}
-    pub async fn futures_orders(self, settle: &str, order_id: &str) -> Result<Value> {
+    pub async fn futures_orders(self, settle: &str, order_id: &str) -> Result<FuturesOrder> {
         let params: BTreeMap<String, String> = BTreeMap::new();
         Ok(self
-            .get::<Value>(&format!("/futures/{}/orders/{}", settle, order_id), &params)
+            .get::<FuturesOrder>(&format!("/futures/{}/orders/{}", settle, order_id), &params)
             .await?)
     }
 }
