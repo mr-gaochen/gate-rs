@@ -20,7 +20,7 @@ impl MessageHandler for MyHandler {
 async fn main() {
     let config = AppConfig::init(); // 假设你有这个方法
     let handler = Arc::new(MyHandler);
-    let _ = run_with_handler(&config, handler).await;
+    let _ = run_with_handler("wss域名", "订阅周期", "标的名称", handler).await;
 }
 ```
 
@@ -45,6 +45,6 @@ fn create_callback() -> MessageCallback {
 async fn main() {
     let config = AppConfig::init(); // 初始化配置
     let callback = create_callback();
-    let _ = run_with_callback(&config, callback).await;
+    let _ = run_with_callback("wss域名", "订阅周期", "标的名称", callback).await;
 }
 ```
