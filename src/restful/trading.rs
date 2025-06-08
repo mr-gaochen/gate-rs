@@ -30,6 +30,7 @@ impl GateClient {
 
         params.insert("contract".into(), json!(contract));
         params.insert("size".into(), json!(size));
+        params.insert("iceberg".into(), json!(0));
 
         //委托价
         if let Some(price) = price {
