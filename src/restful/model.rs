@@ -13,7 +13,7 @@ pub struct FuturesOrder {
     pub size: i64,                 // can be negative for short
     pub iceberg: i64,              // iceberg quantity if any
     pub price: String,             // limit price as string
-    pub close: bool,               // DEPRECATED, use is_close
+    pub close: Option<bool>,               // DEPRECATED, use is_close
     pub is_close: bool,            // whether it's a close order
     pub reduce_only: bool,
     pub is_reduce_only: bool,
