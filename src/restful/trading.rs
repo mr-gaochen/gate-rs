@@ -1,10 +1,8 @@
-use std::{cmp::Ordering, collections::BTreeMap};
+use std::collections::BTreeMap;
 
 use crate::client::GateClient;
 use anyhow::Result;
 use serde_json::{json, Value};
-
-use super::model::FuturesOrder;
 
 /// 合约交易下单
 
@@ -50,7 +48,7 @@ impl GateClient {
         }
 
         Ok(self
-            .post::<Value>(&format!("/futures/{}/accounts", settle), &params)
+            .post::<Value>(&format!("/futures/{}/orders", settle), &params)
             .await?)
     }
 
