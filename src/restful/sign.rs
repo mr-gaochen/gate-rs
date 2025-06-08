@@ -56,7 +56,7 @@ impl GateClient {
 
     // 获取时间戳
     fn get_timestamp(&self) -> String {
-        chrono::Utc::now().timestamp_millis().to_string()
+        chrono::Utc::now().timestamp().to_string()
     }
 
     fn sha512_hex(&self, input: &str) -> String {
