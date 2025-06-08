@@ -99,7 +99,7 @@ impl GateClient {
                 .map(|(k, v)| format!("{}={}", urlencoding::encode(k), urlencoding::encode(v)))
                 .collect::<Vec<_>>()
                 .join("&");
-            format!("{}/{}?{}", domain, path, query_string)
+            format!("{}/{}/{}?{}", domain, prefix, path, query_string)
         }
     }
 }
