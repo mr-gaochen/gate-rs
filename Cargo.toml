@@ -2,6 +2,10 @@
 name = "gate-rs"
 version = "0.1.0"
 edition = "2024"
+authors = ["Mr Gaochen <wooyulan@gmail.com>"]
+description = "gate rust sdk"
+homepage = "https://github.com/mr-gaochen/gate-rs.git"
+license = "MIT"
 
 [dependencies]
 anyhow = "1.0.98"
