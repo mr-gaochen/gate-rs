@@ -1,10 +1,13 @@
 use anyhow::Result;
-use hmac_sha512::Hash;
+use hmac::{Hmac, Mac};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
+use sha2::{Digest, Sha512};
 use std::collections::BTreeMap;
 
 use crate::client::GateClient;
+
+type HmacSha512 = Hmac<Sha512>;
 
 impl GateClient {
     pub async fn get<T>(
@@ -15,24 +18,44 @@ impl GateClient {
     where
         T: DeserializeOwned + std::fmt::Debug,
     {
+        let method = "GET";
         let timestamp = self.get_timestamp();
-        // 构建签名字符串
-        let query_str = Self::build_query_string(parameters);
-        let pre_sign = format!(
-            "{}{}{}{}{}",
-            "GET",
-            format!("{}/{}", self.prefix, request_path),
-            query_str,
-            "",
-            timestamp
+        let url_path = format!(
+            "/{}/{}",
+            self.prefix.trim_start_matches('/'),
+            request_path.trim_start_matches('/')
         );
-        let sign = self.sha512_hex(&pre_sign);
+
+        // 拼 query string，注意不 URL encode，顺序和请求里一致
+        let query_string = if parameters.is_empty() {
+            "".to_string()
+        } else {
+            parameters
+                .iter()
+                .map(|(k, v)| format!("{}={}", k, v))
+                .collect::<Vec<_>>()
+                .join("&")
+        };
+
+        // GET 请求没有 body，payload 为空字符串，计算 SHA512 hash
+        let payload_hash = Self::sha512_hex("");
+
+        // GET 请求没有 body，payload 为空字符串，计算 SHA512 hash
+        let payload_hash = Self::sha512_hex("");
+
+        // 构造签名字符串
+        let sign_str = format!(
+            "{}\n{}\n{}\n{}\n{}",
+            method, url_path, query_string, payload_hash, timestamp
+        );
+
+        let sign = self.hmac_sha512_hex(&sign_str);
 
         let url = self.build_full_url(request_path, parameters);
 
         let headers = self.create_header(&sign, &timestamp);
         if self.debug {
-            println!("FIRST_SIGN:{}", pre_sign.clone());
+            println!("SIGN STRING:\n{}", sign_str);
             println!("[GET] URL: {}", url);
             println!("[GET] Params: {:?}", parameters);
             println!("[GET] Sign: {}", sign);
@@ -59,10 +82,20 @@ impl GateClient {
         chrono::Utc::now().timestamp().to_string()
     }
 
-    fn sha512_hex(&self, input: &str) -> String {
-        let mut hasher = Hash::new();
+    // 计算 SHA512 hex
+    fn sha512_hex(input: &str) -> String {
+        let mut hasher = Sha512::new();
         hasher.update(input.as_bytes());
         let result = hasher.finalize();
+        hex::encode(result)
+    }
+
+    // 计算 HMAC-SHA512 hex，用 self.api_secret 作为 key
+    fn hmac_sha512_hex(&self, input: &str) -> String {
+        let mut mac = HmacSha512::new_from_slice(self.secret_key.as_bytes())
+            .expect("HMAC can take key of any size");
+        mac.update(input.as_bytes());
+        let result = mac.finalize().into_bytes();
         hex::encode(result)
     }
 
