@@ -13,21 +13,21 @@ pub struct FuturesOrder {
     pub size: i64,                 // can be negative for short
     pub iceberg: i64,              // iceberg quantity if any
     pub price: String,             // limit price as string
-    pub close: Option<bool>,               // DEPRECATED, use is_close
+    pub close: Option<bool>,       // DEPRECATED, use is_close
     pub is_close: bool,            // whether it's a close order
-    pub reduce_only: bool,
+    pub reduce_only: Option<bool>,
     pub is_reduce_only: bool,
-    pub is_liq: bool, // true if it's a liquidation order
-    pub tif: String,  // gtc, ioc, poc, fok
-    pub left: i64,    // remaining size
-    pub fill_price: String,
-    pub text: String,              // custom order note
-    pub tkfr: String,              // taker fee rate
-    pub mkfr: String,              // maker fee rate
-    pub refu: u64,                 // referral user id
+    pub is_liq: bool,        // true if it's a liquidation order
+    pub tif: Option<String>, // gtc, ioc, poc, fok
+    pub left: Option<i64>,   // remaining size
+    pub fill_price: Option<String>,
+    pub text: Option<String>,      // custom order note
+    pub tkfr: Option<String>,      // taker fee rate
+    pub mkfr: Option<String>,      // maker fee rate
+    pub refu: Option<u64>,         // referral user id
     pub auto_size: Option<String>, // can be "close_long", "close_short", or null
     pub stp_id: u64,
     pub stp_act: String, // co, cn, cb, -
     pub amend_text: String,
-    pub biz_info: Option<String>,
+    pub biz_info: String,
 }
