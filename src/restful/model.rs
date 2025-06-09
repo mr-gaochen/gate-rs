@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 // 合约订单详情
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FuturesOrder {
-    pub id: u64,
+    pub id: Option<u64>,
     pub user: u64,
     pub create_time: f64,
     pub finish_time: Option<f64>,
