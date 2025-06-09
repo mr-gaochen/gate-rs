@@ -24,6 +24,7 @@ impl GateClient {
         price: Option<&str>,
         close: Option<bool>,
         auto_size: Option<&str>,
+        reduce_only: Option<bool>,
         tif: Option<&str>,
     ) -> Result<FuturesOrder> {
         let mut params: BTreeMap<String, Value> = BTreeMap::new();
@@ -39,6 +40,10 @@ impl GateClient {
 
         if let Some(close) = close {
             params.insert("close".into(), json!(close));
+        }
+
+        if let Some(reduce_only) = reduce_only {
+            params.insert("reduce_only".into(), json!(reduce_only));
         }
 
         if let Some(auto_size) = auto_size {
