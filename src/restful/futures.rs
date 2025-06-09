@@ -11,7 +11,7 @@ use super::model::ContractInfo;
 impl GateClient {
     // 获取单个仓位信息
     // GET /futures/{settle}/positions/{contract}
-    pub async fn futures_positions(self, settle: &str, contract: &str) -> Result<Value> {
+    pub async fn futures_positions(&self, settle: &str, contract: &str) -> Result<Value> {
         let params: BTreeMap<String, String> = BTreeMap::new();
         Ok(self
             .get::<Value>(
@@ -23,7 +23,7 @@ impl GateClient {
 
     // 获取合约账户
     // GET /futures/{settle}/accounts
-    pub async fn futures_account(self, settle: &str) -> Result<Value> {
+    pub async fn futures_account(&self, settle: &str) -> Result<Value> {
         let params: BTreeMap<String, String> = BTreeMap::new();
         Ok(self
             .get::<Value>(&format!("/futures/{}/accounts", settle), &params)
@@ -32,7 +32,7 @@ impl GateClient {
 
     // 获取合约信息
     // GET /futures/{settle}/contracts/{contract}
-    pub async fn futures_contract(self, settle: &str, contract: &str) -> Result<ContractInfo> {
+    pub async fn futures_contract(&self, settle: &str, contract: &str) -> Result<ContractInfo> {
         let params: BTreeMap<String, String> = BTreeMap::new();
         Ok(self
             .get::<ContractInfo>(

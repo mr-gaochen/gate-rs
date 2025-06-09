@@ -17,7 +17,7 @@ impl GateClient {
     // 双仓模式下用于设置平仓的方向，close_long 平多头， close_short 平空头，需要同时设置 size 为 0
     // tif: gtc
     pub async fn futures_trade_orders(
-        self,
+        &self,
         settle: &str,
         contract: &str,
         size: i64,
@@ -56,7 +56,7 @@ impl GateClient {
 
     // 查询订单详情
     // GET /futures/{settle}/orders/{order_id}
-    pub async fn futures_orders(self, settle: &str, order_id: &str) -> Result<FuturesOrder> {
+    pub async fn futures_orders(&self, settle: &str, order_id: &str) -> Result<FuturesOrder> {
         let params: BTreeMap<String, String> = BTreeMap::new();
         Ok(self
             .get::<FuturesOrder>(&format!("/futures/{}/orders/{}", settle, order_id), &params)
