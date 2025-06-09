@@ -9,27 +9,27 @@ pub struct FuturesOrder {
     pub finish_time: Option<f64>,
     pub finish_as: Option<String>, // e.g., "filled"
     pub status: Option<String>,    // e.g., "open", "finished", "cancelled"
-    pub contract: String,          // contract name, e.g., "BTC_USDT"
-    pub size: i64,                 // can be negative for short
-    pub iceberg: i64,              // iceberg quantity if any
-    pub price: String,             // limit price as string
+    pub contract: Option<String>,  // contract name, e.g., "BTC_USDT"
+    pub size: Option<i64>,         // can be negative for short
+    pub iceberg: Option<i64>,      // iceberg quantity if any
+    pub price: Option<String>,     // limit price as string
     pub close: Option<bool>,       // DEPRECATED, use is_close
-    pub is_close: bool,            // whether it's a close order
+    pub is_close: Option<bool>,    // whether it's a close order
     pub reduce_only: Option<bool>,
-    pub is_reduce_only: bool,
-    pub is_liq: bool,        // true if it's a liquidation order
-    pub tif: Option<String>, // gtc, ioc, poc, fok
-    pub left: Option<i64>,   // remaining size
+    pub is_reduce_only: Option<bool>,
+    pub is_liq: Option<bool>, // true if it's a liquidation order
+    pub tif: Option<String>,  // gtc, ioc, poc, fok
+    pub left: Option<i64>,    // remaining size
     pub fill_price: Option<String>,
     pub text: Option<String>,      // custom order note
     pub tkfr: Option<String>,      // taker fee rate
     pub mkfr: Option<String>,      // maker fee rate
     pub refu: Option<u64>,         // referral user id
     pub auto_size: Option<String>, // can be "close_long", "close_short", or null
-    pub stp_id: u64,
-    pub stp_act: String, // co, cn, cb, -
-    pub amend_text: String,
-    pub biz_info: String,
+    pub stp_id: Option<u64>,
+    pub stp_act: Option<String>, // co, cn, cb, -
+    pub amend_text: Option<String>,
+    pub biz_info: Option<String>,
 }
 
 // 合约信息
