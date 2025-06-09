@@ -101,9 +101,9 @@ async fn run_internal(
                     select! {
                         // 心跳机制
                         _ = sleep(Duration::from_secs(HEARTBEAT_INTERVAL)) => {
-                            let ping_msg = json!({ "op": "ping", "ping": Utc::now().timestamp() }).to_string();
+                       //     let ping_msg = json!({ "op": "ping", "ping": Utc::now().timestamp() }).to_string();
                             let mut writer = write_clone_heartbeat.lock().await;
-                            if let Err(e) = writer.send(Message::Text(ping_msg)).await {
+                            if let Err(e) = writer.send(Message::Ping(Vec::new())).await {
                                 println!("发送心跳失败: {:?}", e);
                                 break;
                             }
