@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct FuturesOrder {
     pub id: Option<u64>,
     pub user: Option<u64>,
-    pub create_time: f64,
+    pub create_time: Option<f64>,
     pub finish_time: Option<f64>,
     pub finish_as: Option<String>, // e.g., "filled"
     pub status: String,            // e.g., "open", "finished", "cancelled"
