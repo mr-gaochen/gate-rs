@@ -8,7 +8,7 @@ pub struct FuturesOrder {
     pub create_time: Option<f64>,
     pub finish_time: Option<f64>,
     pub finish_as: Option<String>, // e.g., "filled"
-    pub status: String,            // e.g., "open", "finished", "cancelled"
+    pub status: Option<String>,    // e.g., "open", "finished", "cancelled"
     pub contract: String,          // contract name, e.g., "BTC_USDT"
     pub size: i64,                 // can be negative for short
     pub iceberg: i64,              // iceberg quantity if any
